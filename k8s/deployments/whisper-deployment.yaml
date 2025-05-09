@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whisper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whisper
+  template:
+    metadata:
+      labels:
+        app: whisper
+    spec:
+      containers:
+        - name: whisper
+          image: your-dockerhub-username/whisper-service:latest
+          ports:
+            - containerPort: 8002
+          volumeMounts:
+            - name: whisper-storage
+              mountPath: /data/audio
+      volumes:
+        - name: whisper-storage
+          persistentVolumeClaim:
+            claimName: whisper-pvc

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audio Recorder & Uploader</title>
+  <link rel="stylesheet" href="/style/page1.css" />
+</head>
+<body>
+  <h2>Record and Upload Audio</h2>
+  <button id="startBtn">Start Recording</button>
+  <button id="stopBtn" disabled>Stop & Upload</button>
+  <p id="status"></p>
+
+  <h2>Or Upload an Existing Audio File</h2>
+  <form id="uploadForm">
+    <input type="file" id="audioFile" accept="audio/*" required />
+    <button type="submit">Upload File</button>
+  </form>
+
+  <script src="/script/page1.js"></script>
+</body>
+</html>

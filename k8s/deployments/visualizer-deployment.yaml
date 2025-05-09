@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visualizer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: visualizer
+  template:
+    metadata:
+      labels:
+        app: visualizer
+    spec:
+      containers:
+        - name: visualizer
+          image: your-dockerhub-username/visualizer:latest
+          ports:
+            - containerPort: 7003
+          volumeMounts:
+            - name: whisper-storage
+              mountPath: /data/audio
+      volumes:
+        - name: whisper-storage
+          persistentVolumeClaim:
+            claimName: whisper-pvc

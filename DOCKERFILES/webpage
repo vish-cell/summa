@@ -1,0 +1,16 @@
+# Use official Nginx image
+FROM nginx:alpine
+
+# Remove default Nginx website
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy frontend files to Nginx HTML directory
+COPY front/html/page1.html /usr/share/nginx/html/index.html
+COPY front/style/page1.css /usr/share/nginx/html/style.css
+COPY front/script/page1.js /usr/share/nginx/html/script.js
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

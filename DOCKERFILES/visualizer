@@ -1,0 +1,15 @@
+# DOCKERFILES/visualizer
+
+FROM python:3.10-slim
+
+WORKDIR /app
+COPY visualizer/app /app
+COPY visualizer/requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Mountable volume for PV storage
+VOLUME ["/data/audio"]
+
+EXPOSE 7003
+CMD ["python", "visualizer.py"]
