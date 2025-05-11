@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Intelligence System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        .file-upload, .recording {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #recordedAudio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .transcription-box {
+            min-height: 100px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        #languageResult {
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .processing-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        #transcriptionResult {
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Intelligence System</h1>
+        
+        <!-- Upload Section -->
+        <div id="uploadSection">
+            <h2>Upload or Record Audio</h2>
+            <div class="file-upload">
+                <input type="file" id="audioFile" accept="audio/*">
+                <button id="uploadBtn">Upload Audio</button>
+            </div>
+            <div class="recording">
+                <button id="recordBtn">Start Recording</button>
+                <button id="stopBtn" disabled>Stop Recording</button>
+                <audio id="recordedAudio" controls></audio>
+            </div>
+        </div>
+
+        <!-- Language Detection -->
+        <div id="languageSection" class="hidden processing-section">
+            <h3>Detected Language: <span id="languageResult"></span></h3>
+            <button id="confirmBtn">Yes, Transcribe</button>
+            <button id="rejectBtn">No, Try Again</button>
+        </div>
+        
+        <!-- Transcription Result -->
+        <div id="transcriptionResult" class="hidden processing-section">
+            <h3>Transcription:</h3>
+            <div id="transcriptionText" class="transcription-box"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioFileInput = document.getElementById('audioFile');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const recordBtn = document.getElementById('recordBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const recordedAudio = document.getElementById('recordedAudio');
+            const languageResult = document.getElementById('languageResult');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const rejectBtn = document.getElementById('rejectBtn');
+            const transcriptionText = document.getElementById('transcriptionText');
+            
+            const uploadSection = document.getElementById('uploadSection');
+            const languageSection = document.getElementById('languageSection');
+            const transcriptionResult = document.getElementById('transcriptionResult');
+            
+            let mediaRecorder;
+            let audioChunks = [];
+            let currentAudioFile = null;
+
+            // Handle file upload
+            uploadBtn.addEventListener('click', function() {
+                if (audioFileInput.files.length === 0) {
+                    alert('Please select an audio file first');
+                    return;
+                }
+                processAudio(audioFileInput.files[0]);
+            });
+            
+            // Handle recording
+            recordBtn.addEventListener('click', startRecording);
+            stopBtn.addEventListener('click', stopRecording);
+            
+            function startRecording() {
+                audioChunks = [];
+                recordBtn.disabled = true;
+                stopBtn.disabled = false;
+                recordedAudio.src = '';
+                
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+                        
+                        mediaRecorder.ondataavailable = function(e) {
+                            audioChunks.push(e.data);
+                        };
+                        
+                        mediaRecorder.onstop = function() {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            recordedAudio.src = audioUrl;
+                            
+                            // Create a file from the blob
+                            const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+                            processAudio(audioFile);
+                        };
+                    })
+                    .catch(err => {
+                        console.error('Error accessing microphone:', err);
+                        alert('Error accessing microphone. Please check permissions.');
+                        recordBtn.disabled = false;
+                        stopBtn.disabled = true;
+                    });
+            }
+            
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    recordBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+            }
+            
+            async function processAudio(file) {
+                currentAudioFile = file;
+                uploadSection.classList.add('hidden');
+                languageSection.classList.remove('hidden');
+                transcriptionResult.classList.add('hidden');
+                languageResult.textContent = 'Detecting...';
+                
+                const formData = new FormData();
+                formData.append('audio', file);
+                
+                try {
+                    // Step 1: Detect language
+                    const langResponse = await fetch('/detect_language', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!langResponse.ok) {
+                        throw new Error('Language detection failed');
+                    }
+                    
+                    const langData = await langResponse.json();
+                    languageResult.textContent = langData.language;
+                    currentAudioFile = langData.filepath;
+                    
+                    // Handle confirmation
+                    confirmBtn.onclick = async () => {
+                        languageSection.classList.add('hidden');
+                        transcriptionResult.classList.remove('hidden');
+                        transcriptionText.textContent = 'Transcribing...';
+                        
+                        try {
+                            const transcribeResponse = await fetch('/transcribe', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    filepath: langData.filepath,
+                                    language: langData.language
+                                })
+                            });
+                            
+                            if (!transcribeResponse.ok) {
+                                throw new Error('Transcription failed');
+                            }
+                            
+                            const transcript = await transcribeResponse.json();
+                            transcriptionText.textContent = transcript.text;
+                        } catch (error) {
+                            console.error('Error:', error);
+                            transcriptionText.textContent = 'Error: ' + error.message;
+                        }
+                    };
+                    
+                    rejectBtn.onclick = () => {
+                        languageSection.classList.add('hidden');
+                        uploadSection.classList.remove('hidden');
+                    };
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    languageResult.textContent = 'Detection failed';
+                    alert('Error detecting language: ' + error.message);
+                    uploadSection.classList.remove('hidden');
+                    languageSection.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,29 +1,118 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  background-color: #f4f4f4;
-  color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
 }
 
-h2 {
-  color: #444;
+.container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 20px;
 }
 
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
+.upload-box {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: all 0.3s;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.file-input {
+    display: none;
 }
 
-#status {
-  margin-top: 20px;
-  font-weight: bold;
+.file-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.file-label:hover {
+    background-color: #2980b9;
+}
+
+.submit-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-btn.cancel-btn {
+    background-color: #e74c3c;
+}
+
+.progress-container {
+    margin: 20px 0;
+    display: none;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #3498db;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.hidden {
+    display: none;
+}
+
+.audio-preview {
+    width: 100%;
+    margin: 20px 0;
+    display: none;
+}
+
+.language-confirm, .results-container {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 5px;
+    display: none;
+}
+
+.language-confirm {
+    background-color: #f1c40f;
+}
+
+.results-container {
+    background-color: #f8f9fa;
+}
+
+.transcription-text {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    white-space: pre-wrap;
+}
+
+.error-message {
+    color: #e74c3c;
+    padding: 10px;
+    background-color: #fadbd8;
+    border-radius: 5px;
+    display: none;
 }

@@ -1,22 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Audio Recorder & Uploader</title>
-  <link rel="stylesheet" href="/style/page1.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription Service</title>
+    <link rel="stylesheet" href="../style/page1.css">
 </head>
 <body>
-  <h2>Record and Upload Audio</h2>
-  <button id="startBtn">Start Recording</button>
-  <button id="stopBtn" disabled>Stop & Upload</button>
-  <p id="status"></p>
+    <div class="container">
+        <h1>Audio Transcription with Whisper</h1>
+        
+        <div class="upload-box" id="uploadBox">
+            <input type="file" id="fileInput" class="file-input" accept="audio/*">
+            <label for="fileInput" class="file-label">Choose Audio File</label>
+            <span id="fileName">No file selected</span>
+            <button id="uploadBtn" class="submit-btn" disabled>Upload File</button>
+        </div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">Processing...</div>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <audio controls class="audio-preview" id="audioPreview"></audio>
+        
+        <div class="language-confirm" id="languageConfirm">
+            <h3>Detected Language: <span id="detectedLanguage"></span></h3>
+            <button id="transcribeBtn" class="submit-btn">Confirm & Transcribe</button>
+            <button id="cancelBtn" class="submit-btn cancel-btn">Cancel</button>
+        </div>
+        
+        <div class="results-container" id="resultsContainer">
+            <h2>Transcription Results</h2>
+            <div class="transcription-text" id="transcriptionText"></div>
+            <button id="newFileBtn" class="submit-btn">Upload New File</button>
+        </div>
+    </div>
 
-  <h2>Or Upload an Existing Audio File</h2>
-  <form id="uploadForm">
-    <input type="file" id="audioFile" accept="audio/*" required />
-    <button type="submit">Upload File</button>
-  </form>
-
-  <script src="/script/page1.js"></script>
+    <script src="../script/page1.js"></script>
 </body>
 </html>

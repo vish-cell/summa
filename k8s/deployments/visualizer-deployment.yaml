@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: visualizer
-          image: your-dockerhub-username/visualizer:latest
+          image: vishalg2022/visualizer:v1
           ports:
             - containerPort: 7003
           volumeMounts:

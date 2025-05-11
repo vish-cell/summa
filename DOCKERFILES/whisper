@@ -1,17 +1,14 @@
-FROM python:3.10
+FROM python:3.10-slim
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the application files
-COPY whisper_app /app
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY whisper_app/requirement.txt .
+COPY whisper/requirements.txt .
+RUN pip install -r requirements.txt
 
+COPY whisper .
 
-RUN apt-get update && apt-get install -y git && pip install --upgrade pip && pip install git+https://github.com/openai/whisper.git && pip install -r requirement.txt
-
-EXPOSE 8002
-
-# Set the default command
-CMD ["python", "app/whisper_app.py"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
